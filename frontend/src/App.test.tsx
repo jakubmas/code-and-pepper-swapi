@@ -14,8 +14,6 @@ vi.mock('graphql-request', () => ({
 }))
 
 // Mock the hooks
-let mockScores = { left: 0, right: 0 }
-
 vi.mock('@/hooks', () => ({
   useBattleCards: vi.fn(() => ({
     leftCard: { data: null, isLoading: false, isError: false, refetch: vi.fn() } as any,
@@ -24,9 +22,6 @@ vi.mock('@/hooks', () => ({
     isError: false,
     refetchBoth: vi.fn(),
   })),
-  useLocalStorage: vi.fn(() => {
-    return [mockScores, (newValue: any) => { mockScores = newValue }]
-  }),
   useIsSmallScreen: vi.fn(() => false),
 }))
 

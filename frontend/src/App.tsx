@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Container, Box, Button, Typography, Card, CardContent, CircularProgress, Paper, Chip, Alert } from '@mui/material'
 import { PlayArrow, Replay } from '@mui/icons-material'
+import { useMutation } from '@tanstack/react-query'
 import { Navbar } from '@/components'
-import { useBattleCards, useLocalStorage } from '@/hooks'
+import { useBattleCards } from '@/hooks'
 import type { Person, Starship } from '@/types/graphql'
 import { formatAttributeValue } from '@/utils/game-utils'
+import { graphqlClient } from '@/config/graphql-client'
+import { SAVE_BATTLE_RESULT } from '@/graphql/queries'
 
 type ResourceType = 'people' | 'starships'
 type GameState = 'idle' | 'loading' | 'playing' | 'showingWinner'
@@ -13,11 +16,29 @@ type Winner = 'left' | 'right' | 'tie' | null
 function App() {
   const [resourceType, setResourceType] = useState<ResourceType>('people')
   const [gameState, setGameState] = useState<GameState>('idle')
-  const [scores, setScores] = useLocalStorage('starwars-battle-scores', { left: 0, right: 0 })
+  const [scores, setScores] = useState({ left: 0, right: 0 })
   const [winner, setWinner] = useState<Winner>(null)
   const [hasStarted, setHasStarted] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   
   const { leftCard, rightCard, isLoading, refetchBoth } = useBattleCards(resourceType, hasStarted)
+
+  const saveBattleMutation = useMutation({
+    mutationFn: async (variables: {
+      winner: string
+      resourceType: string
+      players: Array<{ id: number; name: string; value: string }>
+    }) => {
+      return await graphqlClient.request(SAVE_BATTLE_RESULT, variables)
+    },
+    onSuccess: () => {
+      setSaveError(null)
+    },
+    onError: (error) => {
+      console.error('Failed to save battle result:', error)
+      setSaveError('Failed to save battle result, but you can continue playing')
+    },
+  })
   
   // Calculate winner when cards are loaded
   useEffect(() => {
@@ -37,14 +58,36 @@ function App() {
       setWinner(newWinner)
       setGameState('showingWinner')
       
-      // Update scores
+      // Update local scores for display
       if (newWinner === 'left') {
         setScores(prev => ({ ...prev, left: prev.left + 1 }))
       } else if (newWinner === 'right') {
         setScores(prev => ({ ...prev, right: prev.right + 1 }))
       }
+
+      // Save battle result to database
+      const battleWinner = newWinner === 'left' ? 'player' : newWinner === 'right' ? 'computer' : 'draw'
+      
+      const players = [
+        {
+          id: 1, // Left player (player)
+          name: leftCard.data.name,
+          value: formatAttributeValue(leftValue, resourceType === 'people' ? 'mass' : 'crew')
+        },
+        {
+          id: 2, // Right player (computer)
+          name: rightCard.data.name,
+          value: formatAttributeValue(rightValue, resourceType === 'people' ? 'mass' : 'crew')
+        }
+      ]
+
+      saveBattleMutation.mutate({
+        winner: battleWinner,
+        resourceType,
+        players
+      })
     }
-  }, [leftCard.data, rightCard.data, gameState, resourceType, setScores])
+  }, [leftCard.data, rightCard.data, gameState, resourceType, saveBattleMutation])
   
   const playGame = () => {
     setHasStarted(true)
@@ -113,6 +156,13 @@ function App() {
           {/* Error State */}
           {(leftCard.isError || rightCard.isError) && (
             <Alert severity="error">Error loading data. Please try again.</Alert>
+          )}
+          
+          {/* Save Error State */}
+          {saveError && (
+            <Alert severity="warning" onClose={() => setSaveError(null)}>
+              {saveError}
+            </Alert>
           )}
           
           {/* Battle Cards */}

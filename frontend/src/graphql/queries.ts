@@ -17,3 +17,12 @@ export const GET_RANDOM_STARSHIP = gql`
     }
   }
 `;
+
+export const SAVE_BATTLE_RESULT = gql`
+  mutation SaveBattleResult($winner: String!, $resourceType: String!, $players: [BattlePlayerInput!]!) {
+    saveBattleResult(winner: $winner, resourceType: $resourceType, players: $players) {
+      success
+      message
+    }
+  }
+`;
