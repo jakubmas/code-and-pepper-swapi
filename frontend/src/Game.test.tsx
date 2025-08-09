@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import App from './App'
+import Game from './Game'
 import { mockPerson, mockPerson2 } from './test/mocks'
 
 // Mock the graphql-request module
@@ -34,12 +34,12 @@ const renderApp = () => {
   
   return render(
     <QueryClientProvider client={queryClient}>
-      <App />
+      <Game />
     </QueryClientProvider>
   )
 }
 
-describe('App Component', () => {
+describe('Game Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })

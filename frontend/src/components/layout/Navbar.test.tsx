@@ -1,53 +1,67 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { BrowserRouter } from 'react-router-dom'
 import { Navbar } from './Navbar'
 
 vi.mock('@/hooks', () => ({
   useIsSmallScreen: vi.fn(() => false),
 }))
 
-describe('Navbar', () => {
-  const mockOnStartOver = vi.fn()
+const renderNavbar = () => {
+  return render(
+    <BrowserRouter>
+      <Navbar />
+    </BrowserRouter>
+  )
+}
 
+describe('Navbar', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it('should render the title', () => {
-    render(<Navbar onStartOver={mockOnStartOver} />)
+    renderNavbar()
     
     expect(screen.getByText('⚔️')).toBeInTheDocument()
     expect(screen.getByText('Star Wars Battle')).toBeInTheDocument()
   })
 
-  it('should render Start Over button', () => {
-    render(<Navbar onStartOver={mockOnStartOver} />)
+  it('should render navigation buttons', () => {
+    renderNavbar()
     
-    const startOverButton = screen.getByRole('button', { name: /start over/i })
-    expect(startOverButton).toBeInTheDocument()
+    const gameButton = screen.getByRole('link', { name: /game/i })
+    const resultsButton = screen.getByRole('link', { name: /results/i })
+    
+    expect(gameButton).toBeInTheDocument()
+    expect(resultsButton).toBeInTheDocument()
   })
 
   it('should show full text on large screens', async () => {
     const { useIsSmallScreen } = await import('@/hooks')
     vi.mocked(useIsSmallScreen).mockReturnValue(false)
     
-    render(<Navbar onStartOver={mockOnStartOver} />)
+    renderNavbar()
     
-    // Should show full "Start Over" text
-    expect(screen.getByText('Start Over')).toBeInTheDocument()
+    // Should show full "Game" and "Results" text
+    expect(screen.getByText('Game')).toBeInTheDocument()
+    expect(screen.getByText('Results')).toBeInTheDocument()
   })
 
   it('should have correct styling', () => {
-    render(<Navbar onStartOver={mockOnStartOver} />)
+    renderNavbar()
     
     const appBar = screen.getByRole('banner')
     expect(appBar).toBeInTheDocument()
   })
 
-  it('should render with proper accessibility attributes', () => {
-    render(<Navbar onStartOver={mockOnStartOver} />)
+  it('should render navigation links with correct hrefs', () => {
+    renderNavbar()
     
-    const startOverButton = screen.getByRole('button', { name: /start over/i })
-    expect(startOverButton).toHaveAttribute('type', 'button')
+    const gameLink = screen.getByRole('link', { name: /game/i })
+    const resultsLink = screen.getByRole('link', { name: /results/i })
+    
+    expect(gameLink).toHaveAttribute('href', '/')
+    expect(resultsLink).toHaveAttribute('href', '/results')
   })
 })

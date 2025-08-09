@@ -26,3 +26,28 @@ export const SAVE_BATTLE_RESULT = gql`
     }
   }
 `;
+
+export const GET_BATTLE_HISTORY = gql`
+  query GetBattleHistory($page: Int, $limit: Int, $resourceType: String, $winner: String) {
+    getBattleHistory(page: $page, limit: $limit, resourceType: $resourceType, winner: $winner) {
+      items {
+        id
+        winner
+        resourceType
+        players {
+          id
+          name
+          value
+        }
+        createdAt
+      }
+      pageInfo {
+        currentPage
+        totalPages
+        hasNextPage
+        hasPreviousPage
+        totalCount
+      }
+    }
+  }
+`;
