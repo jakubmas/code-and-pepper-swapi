@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { 
   Box, 
   Typography, 
@@ -69,16 +69,11 @@ export function Results() {
       )
       return response.getBattleHistory
     },
-    staleTime: 0, // Always consider data stale
-    gcTime: 0, // Don't cache data
+    staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
+    refetchOnMount: true, // Refetch when component first mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
-    refetchOnMount: true, // Always refetch on mount
   })
 
-  // Refetch when component mounts (user navigates to Results page)
-  useEffect(() => {
-    refetch()
-  }, [])
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
     setPage(newPage)

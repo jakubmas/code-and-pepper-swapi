@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Box, Button, Typography, Card, CardContent, CircularProgress, Paper, Chip, Alert } from '@mui/material'
 import { PlayArrow, Replay } from '@mui/icons-material'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useBattleCards } from '@/hooks'
 import type { Person, Starship } from '@/types/graphql'
 import { formatAttributeValue } from '@/utils/game-utils'
 import { graphqlClient } from '@/config/graphql-client'
-import { SAVE_BATTLE_RESULT } from '@/graphql/queries'
+import { SAVE_BATTLE_RESULT, GET_BATTLE_STATISTICS } from '@/graphql/queries'
 
 type ResourceType = 'people' | 'starships'
 type GameState = 'idle' | 'loading' | 'playing' | 'showingWinner'
@@ -15,13 +15,24 @@ type Winner = 'left' | 'right' | 'tie' | null
 function Game() {
   const [resourceType, setResourceType] = useState<ResourceType>('people')
   const [gameState, setGameState] = useState<GameState>('idle')
-  const [scores, setScores] = useState({ left: 0, right: 0 })
   const [winner, setWinner] = useState<Winner>(null)
   const [hasStarted, setHasStarted] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   
   const queryClient = useQueryClient()
   const { leftCard, rightCard, isLoading, refetchBoth } = useBattleCards(resourceType, hasStarted)
+
+  const { data: battleStats, isLoading: isStatsLoading, refetch: refetchStats } = useQuery({
+    queryKey: ['battleStatistics'],
+    queryFn: async () => {
+      const response = await graphqlClient.request<{ getBattleStatistics: { playerWins: number; computerWins: number } }>(
+        GET_BATTLE_STATISTICS
+      )
+      return response.getBattleStatistics
+    },
+    staleTime: 0,
+    refetchOnMount: true,
+  })
 
   const saveBattleMutation = useMutation({
     mutationFn: async (variables: {
@@ -33,8 +44,9 @@ function Game() {
     },
     onSuccess: () => {
       setSaveError(null)
-      // Invalidate battle history queries so Results page shows latest data
       queryClient.invalidateQueries({ queryKey: ['battleHistory'] })
+      queryClient.invalidateQueries({ queryKey: ['battleStatistics'] })
+      refetchStats()
     },
     onError: (error) => {
       console.error('Failed to save battle result:', error)
@@ -59,13 +71,6 @@ function Game() {
       
       setWinner(newWinner)
       setGameState('showingWinner')
-      
-      // Update local scores for display
-      if (newWinner === 'left') {
-        setScores(prev => ({ ...prev, left: prev.left + 1 }))
-      } else if (newWinner === 'right') {
-        setScores(prev => ({ ...prev, right: prev.right + 1 }))
-      }
 
       // Save battle result to database
       const battleWinner = newWinner === 'left' ? 'player' : newWinner === 'right' ? 'computer' : 'draw'
@@ -107,18 +112,24 @@ function Game() {
           
           {/* Score Display */}
           <Paper elevation={2} sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="h6" gutterBottom>Score</Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
-              <Box>
-                <Typography variant="h4" color="primary">{scores.left}</Typography>
-                <Typography variant="body2" color="text.secondary">Player 1</Typography>
+            <Typography variant="h6" gutterBottom>Overall Score</Typography>
+            {isStatsLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 60 }}>
+                <CircularProgress size={24} />
               </Box>
-              <Typography variant="h4" sx={{ mx: 2 }}>:</Typography>
-              <Box>
-                <Typography variant="h4" color="primary">{scores.right}</Typography>
-                <Typography variant="body2" color="text.secondary">Player 2</Typography>
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4 }}>
+                <Box>
+                  <Typography variant="h4" color="primary">{battleStats?.playerWins || 0}</Typography>
+                  <Typography variant="body2" color="text.secondary">Player</Typography>
+                </Box>
+                <Typography variant="h4" sx={{ mx: 2 }}>:</Typography>
+                <Box>
+                  <Typography variant="h4" color="primary">{battleStats?.computerWins || 0}</Typography>
+                  <Typography variant="body2" color="text.secondary">Computer</Typography>
+                </Box>
               </Box>
-            </Box>
+            )}
           </Paper>
           
           {/* Resource Selector */}

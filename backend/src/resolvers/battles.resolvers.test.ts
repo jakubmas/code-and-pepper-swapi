@@ -140,6 +140,116 @@ describe('Battles Resolvers', () => {
         consoleErrorSpy.mockRestore();
       });
     });
+
+    describe('getBattleStatistics', () => {
+      let mockDb: any;
+      let mockContext: any;
+
+      beforeEach(() => {
+        mockDb = {
+          select: jest.fn().mockReturnThis(),
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([]),
+        };
+
+        mockContext = {
+          db: mockDb,
+        };
+      });
+
+      it('should return correct player and computer win counts', async () => {
+        // Mock player wins query
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ playerWins: 5 }]),
+        }));
+
+        // Mock computer wins query
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ computerWins: 3 }]),
+        }));
+
+        const result = await battlesResolvers.Query.getBattleStatistics(
+          undefined,
+          undefined,
+          mockContext
+        );
+
+        expect(result).toEqual({
+          playerWins: 5,
+          computerWins: 3,
+        });
+      });
+
+      it('should return zeros when no battles exist', async () => {
+        // Mock player wins query - no battles
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ playerWins: 0 }]),
+        }));
+
+        // Mock computer wins query - no battles
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ computerWins: 0 }]),
+        }));
+
+        const result = await battlesResolvers.Query.getBattleStatistics(
+          undefined,
+          undefined,
+          mockContext
+        );
+
+        expect(result).toEqual({
+          playerWins: 0,
+          computerWins: 0,
+        });
+      });
+
+      it('should convert count results to numbers', async () => {
+        // Mock player wins query - return string values (as some DBs might)
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ playerWins: '12' }]),
+        }));
+
+        // Mock computer wins query - return string values
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ computerWins: '8' }]),
+        }));
+
+        const result = await battlesResolvers.Query.getBattleStatistics(
+          undefined,
+          undefined,
+          mockContext
+        );
+
+        expect(result).toEqual({
+          playerWins: 12,
+          computerWins: 8,
+        });
+        expect(typeof result.playerWins).toBe('number');
+        expect(typeof result.computerWins).toBe('number');
+      });
+
+      it('should handle database errors gracefully', async () => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        
+        // Mock first query to throw error
+        mockDb.select.mockImplementationOnce(() => {
+          throw new Error('Database connection failed');
+        });
+
+        await expect(
+          battlesResolvers.Query.getBattleStatistics(undefined, undefined, mockContext)
+        ).rejects.toThrow('Failed to fetch battle statistics');
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching battle statistics:', expect.any(Error));
+        consoleErrorSpy.mockRestore();
+      });
+    });
   });
 
   describe('Mutation', () => {

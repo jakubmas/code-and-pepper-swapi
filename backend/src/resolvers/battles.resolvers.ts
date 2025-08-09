@@ -97,6 +97,32 @@ export const battlesResolvers = {
         throw new GraphQLError('Failed to fetch battle history');
       }
     },
+
+    getBattleStatistics: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ) => {
+      try {
+        const [{ playerWins }] = await context.db
+          .select({ playerWins: count() })
+          .from(battles)
+          .where(eq(battles.winner, 'player'));
+
+        const [{ computerWins }] = await context.db
+          .select({ computerWins: count() })
+          .from(battles)
+          .where(eq(battles.winner, 'computer'));
+
+        return {
+          playerWins: Number(playerWins),
+          computerWins: Number(computerWins),
+        };
+      } catch (error) {
+        console.error('Error fetching battle statistics:', error);
+        throw new GraphQLError('Failed to fetch battle statistics');
+      }
+    },
   },
   Mutation: {
     saveBattleResult: async (

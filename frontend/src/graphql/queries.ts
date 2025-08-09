@@ -51,3 +51,12 @@ export const GET_BATTLE_HISTORY = gql`
     }
   }
 `;
+
+export const GET_BATTLE_STATISTICS = gql`
+  query GetBattleStatistics {
+    getBattleStatistics {
+      playerWins
+      computerWins
+    }
+  }
+`;

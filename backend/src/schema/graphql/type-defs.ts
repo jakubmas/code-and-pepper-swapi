@@ -67,6 +67,11 @@ export const typeDefs = gql`
     pageInfo: PageInfo!
   }
 
+  type BattleStatistics {
+    playerWins: Int!
+    computerWins: Int!
+  }
+
   type MutationResponse {
     success: Boolean!
     message: String
@@ -81,6 +86,7 @@ export const typeDefs = gql`
       resourceType: String
       winner: String
     ): BattleHistoryResponse!
+    getBattleStatistics: BattleStatistics!
   }
 
   type Mutation {
