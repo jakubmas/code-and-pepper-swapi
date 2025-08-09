@@ -2,6 +2,146 @@ import { battlesResolvers } from './battles.resolvers';
 import { GraphQLError } from 'graphql';
 
 describe('Battles Resolvers', () => {
+  describe('Query', () => {
+    describe('getBattleHistory', () => {
+      let mockDb: any;
+      let mockContext: any;
+
+      beforeEach(() => {
+        mockDb = {
+          select: jest.fn().mockReturnThis(),
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          limit: jest.fn().mockReturnThis(),
+          offset: jest.fn().mockResolvedValue([]),
+        };
+
+        mockContext = {
+          db: mockDb,
+        };
+      });
+
+      it('should return paginated battle history', async () => {
+        const mockBattles = [
+          {
+            id: 1,
+            winner: 'player',
+            resourceType: 'people',
+            players: [
+              { id: 1, name: 'Luke', value: '77 kg' },
+              { id: 2, name: 'Vader', value: '136 kg' }
+            ],
+            createdAt: new Date('2024-01-01T00:00:00Z'),
+          },
+        ];
+
+        // Mock count query
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ total: 1 }]),
+        }));
+
+        // Mock data query  
+        mockDb.offset.mockResolvedValue(mockBattles);
+
+        const args = { page: 1, limit: 10 };
+        const result = await battlesResolvers.Query.getBattleHistory(
+          undefined,
+          args,
+          mockContext
+        );
+
+        expect(result).toEqual({
+          items: [{
+            id: 1,
+            winner: 'player',
+            resourceType: 'people',
+            players: mockBattles[0].players,
+            createdAt: '2024-01-01T00:00:00.000Z',
+          }],
+          pageInfo: {
+            currentPage: 1,
+            totalPages: 1,
+            hasNextPage: false,
+            hasPreviousPage: false,
+            totalCount: 1,
+          },
+        });
+      });
+
+      it('should apply resourceType filter', async () => {
+        // Mock count query
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ total: 0 }]),
+        }));
+
+        const args = { page: 1, limit: 10, resourceType: 'starships' as const };
+        await battlesResolvers.Query.getBattleHistory(undefined, args, mockContext);
+
+        expect(mockDb.where).toHaveBeenCalled();
+      });
+
+      it('should apply winner filter', async () => {
+        // Mock count query
+        mockDb.select.mockImplementationOnce(() => ({
+          from: jest.fn().mockReturnThis(),
+          where: jest.fn().mockResolvedValue([{ total: 0 }]),
+        }));
+
+        const args = { page: 1, limit: 10, winner: 'computer' as const };
+        await battlesResolvers.Query.getBattleHistory(undefined, args, mockContext);
+
+        expect(mockDb.where).toHaveBeenCalled();
+      });
+
+      it('should throw error for invalid page', async () => {
+        const args = { page: 0, limit: 10 };
+        await expect(
+          battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
+        ).rejects.toThrow('Page must be greater than 0');
+      });
+
+      it('should throw error for invalid limit', async () => {
+        const args = { page: 1, limit: 101 };
+        await expect(
+          battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
+        ).rejects.toThrow('Limit must be between 1 and 100');
+      });
+
+      it('should throw error for invalid resourceType', async () => {
+        const args = { page: 1, limit: 10, resourceType: 'invalid' as any };
+        await expect(
+          battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
+        ).rejects.toThrow('Invalid resourceType. Must be "people" or "starships"');
+      });
+
+      it('should throw error for invalid winner', async () => {
+        const args = { page: 1, limit: 10, winner: 'invalid' as any };
+        await expect(
+          battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
+        ).rejects.toThrow('Invalid winner. Must be "player", "computer", or "draw"');
+      });
+
+      it('should handle database errors gracefully', async () => {
+        const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+        
+        mockDb.select.mockImplementationOnce(() => {
+          throw new Error('Database error');
+        });
+
+        const args = { page: 1, limit: 10 };
+        await expect(
+          battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
+        ).rejects.toThrow('Failed to fetch battle history');
+
+        expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching battle history:', expect.any(Error));
+        consoleErrorSpy.mockRestore();
+      });
+    });
+  });
+
   describe('Mutation', () => {
     describe('saveBattleResult', () => {
       let mockDb: any;

@@ -6,6 +6,7 @@ export const resolvers = {
   Query: {
     ...peopleResolvers.Query,
     ...starshipsResolvers.Query,
+    ...battlesResolvers.Query,
   },
   Mutation: {
     ...battlesResolvers.Mutation,

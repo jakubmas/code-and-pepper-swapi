@@ -46,6 +46,27 @@ export const typeDefs = gql`
     value: String!
   }
 
+  type BattleResult {
+    id: ID!
+    winner: String!
+    resourceType: String!
+    players: [BattlePlayer!]!
+    createdAt: String!
+  }
+
+  type PageInfo {
+    currentPage: Int!
+    totalPages: Int!
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    totalCount: Int!
+  }
+
+  type BattleHistoryResponse {
+    items: [BattleResult!]!
+    pageInfo: PageInfo!
+  }
+
   type MutationResponse {
     success: Boolean!
     message: String
@@ -54,6 +75,12 @@ export const typeDefs = gql`
   type Query {
     getRandomPerson: Person!
     getRandomStarship: Starship!
+    getBattleHistory(
+      page: Int = 1
+      limit: Int = 10
+      resourceType: String
+      winner: String
+    ): BattleHistoryResponse!
   }
 
   type Mutation {
