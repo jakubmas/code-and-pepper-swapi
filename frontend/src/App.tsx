@@ -1,18 +1,28 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Container } from '@mui/material'
+import { Container, Box, CircularProgress } from '@mui/material'
 import { Navbar } from '@/components'
 import Game from './Game'
-import { Results } from '@/components'
+
+const Results = lazy(() => import('@/components').then(module => ({ default: module.Results })))
+
+const LoadingFallback = () => (
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+    <CircularProgress />
+  </Box>
+)
 
 function App() {
   return (
     <Router>
       <Navbar />
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Routes>
-          <Route path="/" element={<Game />} />
-          <Route path="/results" element={<Results />} />
-        </Routes>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
+            <Route path="/" element={<Game />} />
+            <Route path="/results" element={<Results />} />
+          </Routes>
+        </Suspense>
       </Container>
     </Router>
   )
