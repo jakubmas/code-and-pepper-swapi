@@ -11,7 +11,7 @@ export type Incremental<T> =
   | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string | number; output: string | number };
+  ID: { input: string; output: string };
   String: { input: string; output: string };
   Boolean: { input: boolean; output: boolean };
   Int: { input: number; output: number };
@@ -37,7 +37,7 @@ export type BattlePlayerInput = {
 
 export type BattleResult = {
   createdAt: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
+  id: Scalars['Int']['output'];
   players: Array<BattlePlayer>;
   resourceType: Scalars['String']['output'];
   winner: Scalars['String']['output'];
@@ -79,7 +79,7 @@ export type Person = {
   gender?: Maybe<Scalars['String']['output']>;
   hairColor?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['Int']['output']>;
-  id: Scalars['ID']['output'];
+  id: Scalars['Int']['output'];
   mass: Scalars['Int']['output'];
   name: Scalars['String']['output'];
   skinColor?: Maybe<Scalars['String']['output']>;
@@ -108,7 +108,7 @@ export type Starship = {
   crew: Scalars['Int']['output'];
   edited?: Maybe<Scalars['String']['output']>;
   hyperdriveRating?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['ID']['output'];
+  id: Scalars['Int']['output'];
   length?: Maybe<Scalars['Float']['output']>;
   manufacturer?: Maybe<Scalars['String']['output']>;
   maxAtmospheringSpeed?: Maybe<Scalars['Int']['output']>;
@@ -146,7 +146,7 @@ export type GetBattleHistoryQueryVariables = Exact<{
 export type GetBattleHistoryQuery = {
   getBattleHistory: {
     items: Array<{
-      id: string | number;
+      id: number;
       winner: string;
       resourceType: string;
       createdAt: string;

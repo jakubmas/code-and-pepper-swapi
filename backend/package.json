@@ -13,10 +13,8 @@
     "test:coverage": "jest --coverage",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/scripts/migrate.ts",
-    "db:push": "drizzle-kit push:pg",
-    "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/scripts/seed.ts",
-    "db:check": "tsx src/scripts/check-data.ts"
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +34,9 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/typescript": "^4.1.6",
+    "@graphql-codegen/typescript-resolvers": "^4.5.1",
     "@graphql-tools/schema": "^10.0.25",
     "@types/jest": "^30.0.0",
     "@types/pg": "^8.15.5",

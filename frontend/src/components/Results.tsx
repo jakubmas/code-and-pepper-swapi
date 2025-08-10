@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ReactElement } from 'react';
 import {
   Box,
   Typography,
@@ -25,7 +26,7 @@ import { graphqlClient } from '@/config/graphql-client';
 import { GET_BATTLE_HISTORY } from '@/graphql/queries';
 import type { BattleHistoryResponse } from '@/generated/graphql';
 
-export function Results() {
+export function Results(): ReactElement {
   const [page, setPage] = useState(1);
   const [resourceTypeFilter, setResourceTypeFilter] = useState<string>('');
   const [winnerFilter, setWinnerFilter] = useState<string>('');
@@ -52,21 +53,21 @@ export function Results() {
     refetchOnWindowFocus: true, // Refetch when window regains focus
   });
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
+  const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number): void => {
     setPage(newPage);
   };
 
-  const handleResourceTypeChange = (value: string) => {
+  const handleResourceTypeChange = (value: string): void => {
     setResourceTypeFilter(value);
     setPage(1); // Reset to first page when filtering
   };
 
-  const handleWinnerChange = (value: string) => {
+  const handleWinnerChange = (value: string): void => {
     setWinnerFilter(value);
     setPage(1); // Reset to first page when filtering
   };
 
-  const clearFilters = () => {
+  const clearFilters = (): void => {
     setResourceTypeFilter('');
     setWinnerFilter('');
     setPage(1);
@@ -85,7 +86,7 @@ export function Results() {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string): string => {
     return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
   };
 

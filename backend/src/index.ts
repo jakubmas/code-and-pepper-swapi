@@ -5,6 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@as-integrations/express5';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
+import { GraphQLFormattedError } from 'graphql';
 import { typeDefs } from './schema/graphql/type-defs';
 import { resolvers } from './resolvers';
 import { db } from './config/database';
@@ -13,7 +14,7 @@ import http from 'http';
 
 dotenv.config();
 
-async function startServer() {
+async function startServer(): Promise<void> {
   const app = express();
   const httpServer = http.createServer(app);
   const PORT = process.env.PORT || 4000;
@@ -29,7 +30,7 @@ async function startServer() {
   const server = new ApolloServer<GraphQLContext>({
     schema,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
-    formatError: formattedError => {
+    formatError: (formattedError): GraphQLFormattedError => {
       console.error('GraphQL Error:', formattedError);
       return {
         ...formattedError,

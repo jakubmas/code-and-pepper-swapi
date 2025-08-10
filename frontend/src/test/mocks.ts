@@ -1,7 +1,7 @@
 import type { Person, Starship } from '@/generated/graphql';
 
 export const mockPerson: Person = {
-  id: '1',
+  id: 1,
   name: 'Luke Skywalker',
   mass: 77,
   height: 172,
@@ -15,7 +15,7 @@ export const mockPerson: Person = {
 };
 
 export const mockPerson2: Person = {
-  id: '2',
+  id: 2,
   name: 'Darth Vader',
   mass: 136,
   height: 202,
@@ -29,7 +29,7 @@ export const mockPerson2: Person = {
 };
 
 export const mockStarship: Starship = {
-  id: '1',
+  id: 1,
   name: 'Millennium Falcon',
   model: 'YT-1300 light freighter',
   manufacturer: 'Corellian Engineering Corporation',
@@ -48,7 +48,7 @@ export const mockStarship: Starship = {
 };
 
 export const mockStarship2: Starship = {
-  id: '2',
+  id: 2,
   name: 'Star Destroyer',
   model: 'Imperial I-class Star Destroyer',
   manufacturer: 'Kuat Drive Yards',

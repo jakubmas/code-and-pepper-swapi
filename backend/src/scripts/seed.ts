@@ -2,7 +2,7 @@ import { db, pool } from '../config/database';
 import { people, starships } from '../schema';
 import { peopleSeedData, starshipsSeedData } from '../data/seed-data';
 
-async function seed() {
+async function seed(): Promise<void> {
   console.log('Starting seed process...');
 
   try {

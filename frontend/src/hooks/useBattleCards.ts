@@ -16,7 +16,7 @@ export function useBattleCards(
   resourceType: 'people' | 'starships',
   enabled: boolean = true
 ): UseBattleCardsResult {
-  const queryFn = async () => {
+  const queryFn = async (): Promise<Person | Starship> => {
     if (resourceType === 'people') {
       const data = await graphqlClient.request<{ getRandomPerson: Person }>(GET_RANDOM_PERSON);
       return data.getRandomPerson;
@@ -45,7 +45,7 @@ export function useBattleCards(
 
   const [leftCard, rightCard] = queries;
 
-  const refetchBoth = () => {
+  const refetchBoth = (): void => {
     leftCard.refetch();
     rightCard.refetch();
   };

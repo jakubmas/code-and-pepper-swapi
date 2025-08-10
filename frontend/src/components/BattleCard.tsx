@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Box, Typography, Card, CardContent, CircularProgress, Chip } from '@mui/material';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { Person, Starship } from '@/generated/graphql';
@@ -19,7 +20,7 @@ export function BattleCard({
   gameState,
   position,
   isGameLoading,
-}: BattleCardProps) {
+}: BattleCardProps): ReactElement {
   const attribute = resourceType === 'people' ? 'mass' : 'crew';
 
   // Determine if this card is the winner or tied
@@ -28,7 +29,7 @@ export function BattleCard({
   const shouldShowChip = gameState === 'showingWinner' && (isWinner || isTie);
 
   // Get the attribute value for display
-  const getAttributeValue = (cardData: Person | Starship) => {
+  const getAttributeValue = (cardData: Person | Starship): number => {
     return resourceType === 'people' ? (cardData as Person).mass : (cardData as Starship).crew;
   };
 

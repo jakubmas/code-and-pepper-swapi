@@ -16,5 +16,21 @@
   "env": {
     "node": true,
     "es2021": true
-  }
+  },
+  "ignorePatterns": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/test/**/*",
+    "**/tests/**/*",
+    "**/generated/**/*",
+    "**/types/generated.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["**/scripts/**/*", "**/config/**/*", "**/index.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }

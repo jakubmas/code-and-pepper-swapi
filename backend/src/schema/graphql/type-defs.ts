@@ -2,7 +2,7 @@ import { gql } from 'graphql-tag';
 
 export const typeDefs = gql`
   type Person {
-    id: ID!
+    id: Int!
     name: String!
     height: Int
     mass: Int!
@@ -16,7 +16,7 @@ export const typeDefs = gql`
   }
 
   type Starship {
-    id: ID!
+    id: Int!
     name: String!
     model: String
     manufacturer: String
@@ -47,7 +47,7 @@ export const typeDefs = gql`
   }
 
   type BattleResult {
-    id: ID!
+    id: Int!
     winner: String!
     resourceType: String!
     players: [BattlePlayer!]!

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { ReactElement } from 'react';
 import { Box, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
 import { PlayArrow, Replay } from '@mui/icons-material';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -19,7 +20,7 @@ type ResourceType = 'people' | 'starships';
 type GameState = 'idle' | 'loading' | 'playing' | 'showingWinner';
 type Winner = 'left' | 'right' | 'tie' | null;
 
-function Game() {
+function Game(): ReactElement {
   const [resourceType, setResourceType] = useState<ResourceType>('people');
   const [gameState, setGameState] = useState<GameState>('idle');
   const [winner, setWinner] = useState<Winner>(null);
@@ -113,7 +114,7 @@ function Game() {
     }
   }, [leftCard.data, rightCard.data, gameState, resourceType, saveBattleMutation]);
 
-  const playGame = () => {
+  const playGame = (): void => {
     setHasStarted(true);
     setGameState('loading');
     setWinner(null);

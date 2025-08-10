@@ -2,6 +2,7 @@ import { eq, and, desc, count } from 'drizzle-orm';
 import { GraphQLError } from 'graphql';
 import { battles } from '../schema/battles';
 import type { GraphQLContext } from '../types/graphql-context';
+import type { BattleHistoryResponse, BattleStatistics, MutationResponse } from '../types/generated';
 
 interface SaveBattleResultArgs {
   winner: 'player' | 'computer' | 'draw';
@@ -22,7 +23,11 @@ interface GetBattleHistoryArgs {
 
 export const battlesResolvers = {
   Query: {
-    getBattleHistory: async (_: unknown, args: GetBattleHistoryArgs, context: GraphQLContext) => {
+    getBattleHistory: async (
+      _: unknown,
+      args: GetBattleHistoryArgs,
+      context: GraphQLContext
+    ): Promise<BattleHistoryResponse> => {
       const { page = 1, limit = 10, resourceType, winner } = args;
 
       // Validate pagination parameters
@@ -94,7 +99,11 @@ export const battlesResolvers = {
       }
     },
 
-    getBattleStatistics: async (_: unknown, __: unknown, context: GraphQLContext) => {
+    getBattleStatistics: async (
+      _: unknown,
+      __: unknown,
+      context: GraphQLContext
+    ): Promise<BattleStatistics> => {
       try {
         const [{ playerWins }] = await context.db
           .select({ playerWins: count() })
@@ -117,7 +126,11 @@ export const battlesResolvers = {
     },
   },
   Mutation: {
-    saveBattleResult: async (_: unknown, args: SaveBattleResultArgs, context: GraphQLContext) => {
+    saveBattleResult: async (
+      _: unknown,
+      args: SaveBattleResultArgs,
+      context: GraphQLContext
+    ): Promise<MutationResponse> => {
       const { winner, resourceType, players } = args;
 
       // Validate input

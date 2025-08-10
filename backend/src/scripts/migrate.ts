@@ -2,7 +2,7 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { db, pool } from '../config/database';
 import path from 'path';
 
-async function runMigrations() {
+async function runMigrations(): Promise<void> {
   console.log('Migration started...');
 
   try {
