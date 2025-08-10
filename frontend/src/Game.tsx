@@ -3,7 +3,7 @@ import { Box, Button, Typography, Card, CardContent, CircularProgress, Paper, Ch
 import { PlayArrow, Replay } from '@mui/icons-material'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useBattleCards } from '@/hooks'
-import type { Person, Starship } from '@/types/graphql'
+import type { Person, Starship, BattleStatistics, MutationResponse, BattlePlayerInput } from '@/generated/graphql'
 import { formatAttributeValue } from '@/utils/game-utils'
 import { graphqlClient } from '@/config/graphql-client'
 import { SAVE_BATTLE_RESULT, GET_BATTLE_STATISTICS } from '@/graphql/queries'
@@ -25,7 +25,7 @@ function Game() {
   const { data: battleStats, isLoading: isStatsLoading, refetch: refetchStats } = useQuery({
     queryKey: ['battleStatistics'],
     queryFn: async () => {
-      const response = await graphqlClient.request<{ getBattleStatistics: { playerWins: number; computerWins: number } }>(
+      const response = await graphqlClient.request<{ getBattleStatistics: BattleStatistics }>(
         GET_BATTLE_STATISTICS
       )
       return response.getBattleStatistics
@@ -38,9 +38,9 @@ function Game() {
     mutationFn: async (variables: {
       winner: string
       resourceType: string
-      players: Array<{ id: number; name: string; value: string }>
+      players: BattlePlayerInput[]
     }) => {
-      return await graphqlClient.request(SAVE_BATTLE_RESULT, variables)
+      return await graphqlClient.request<{ saveBattleResult: MutationResponse }>(SAVE_BATTLE_RESULT, variables)
     },
     onSuccess: () => {
       setSaveError(null)

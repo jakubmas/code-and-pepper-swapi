@@ -23,29 +23,7 @@ import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { graphqlClient } from '@/config/graphql-client'
 import { GET_BATTLE_HISTORY } from '@/graphql/queries'
-
-type BattleResult = {
-  id: string
-  winner: string
-  resourceType: string
-  players: Array<{
-    id: number
-    name: string
-    value: string
-  }>
-  createdAt: string
-}
-
-type BattleHistoryResponse = {
-  items: BattleResult[]
-  pageInfo: {
-    currentPage: number
-    totalPages: number
-    hasNextPage: boolean
-    hasPreviousPage: boolean
-    totalCount: number
-  }
-}
+import type { BattleHistoryResponse } from '@/generated/graphql'
 
 export function Results() {
   const [page, setPage] = useState(1)

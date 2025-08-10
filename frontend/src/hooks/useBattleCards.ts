@@ -2,7 +2,7 @@ import { useQueries } from '@tanstack/react-query';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { graphqlClient } from '@/config/graphql-client';
 import { GET_RANDOM_PERSON, GET_RANDOM_STARSHIP } from '@/graphql/queries';
-import type { Person, Starship, GetRandomPersonResponse, GetRandomStarshipResponse } from '@/types/graphql';
+import type { Person, Starship } from '@/generated/graphql';
 // Query keys factory
 const gameQueryKeys = {
   all: ['game'] as const,
@@ -28,7 +28,7 @@ export function useBattleCards(
         queryKey: [...gameQueryKeys.randomPerson(), 'left'],
         queryFn: async () => {
           if (resourceType !== 'people') return null;
-          const data = await graphqlClient.request<GetRandomPersonResponse>(GET_RANDOM_PERSON);
+          const data = await graphqlClient.request<{ getRandomPerson: Person }>(GET_RANDOM_PERSON);
           return data.getRandomPerson;
         },
         enabled: resourceType === 'people' && enabled,
@@ -37,7 +37,7 @@ export function useBattleCards(
         queryKey: [...gameQueryKeys.randomPerson(), 'right'],
         queryFn: async () => {
           if (resourceType !== 'people') return null;
-          const data = await graphqlClient.request<GetRandomPersonResponse>(GET_RANDOM_PERSON);
+          const data = await graphqlClient.request<{ getRandomPerson: Person }>(GET_RANDOM_PERSON);
           return data.getRandomPerson;
         },
         enabled: resourceType === 'people' && enabled,
@@ -46,7 +46,7 @@ export function useBattleCards(
         queryKey: [...gameQueryKeys.randomStarship(), 'left'],
         queryFn: async () => {
           if (resourceType !== 'starships') return null;
-          const data = await graphqlClient.request<GetRandomStarshipResponse>(GET_RANDOM_STARSHIP);
+          const data = await graphqlClient.request<{ getRandomStarship: Starship }>(GET_RANDOM_STARSHIP);
           return data.getRandomStarship;
         },
         enabled: resourceType === 'starships' && enabled,
@@ -55,7 +55,7 @@ export function useBattleCards(
         queryKey: [...gameQueryKeys.randomStarship(), 'right'],
         queryFn: async () => {
           if (resourceType !== 'starships') return null;
-          const data = await graphqlClient.request<GetRandomStarshipResponse>(GET_RANDOM_STARSHIP);
+          const data = await graphqlClient.request<{ getRandomStarship: Starship }>(GET_RANDOM_STARSHIP);
           return data.getRandomStarship;
         },
         enabled: resourceType === 'starships' && enabled,

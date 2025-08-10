@@ -48,18 +48,20 @@ describe('Game Component', () => {
     renderApp()
     
     expect(screen.getByText('Play Game')).toBeInTheDocument()
-    expect(screen.getByText('Score')).toBeInTheDocument()
+    expect(screen.getByText('Overall Score')).toBeInTheDocument()
     expect(screen.getByText('Choose Resource Type')).toBeInTheDocument()
   })
 
-  it('should display score counter with initial values', () => {
+  it('should display score counter with loading state initially', () => {
     renderApp()
     
-    expect(screen.getByText('Player 1')).toBeInTheDocument()
-    expect(screen.getByText('Player 2')).toBeInTheDocument()
-    // Initial scores should be 0:0
-    const scores = screen.getAllByText('0')
-    expect(scores).toHaveLength(2)
+    expect(screen.getByText('Overall Score')).toBeInTheDocument()
+    
+    const spinner = screen.getByRole('progressbar')
+    expect(spinner).toBeInTheDocument()
+    
+    expect(screen.queryByText('Player')).not.toBeInTheDocument()
+    expect(screen.queryByText('Computer')).not.toBeInTheDocument()
   })
 
   it('should allow switching between People and Starships', async () => {

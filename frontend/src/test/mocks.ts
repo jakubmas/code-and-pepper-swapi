@@ -1,4 +1,4 @@
-import type { Person, Starship } from '@/types/graphql'
+import type { Person, Starship } from '@/generated/graphql'
 
 export const mockPerson: Person = {
   id: '1',
