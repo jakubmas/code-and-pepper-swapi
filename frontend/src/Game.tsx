@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Box, Button, Typography, Card, CardContent, CircularProgress, Paper, Chip, Alert } from '@mui/material'
+import { Box, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material'
 import { PlayArrow, Replay } from '@mui/icons-material'
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query'
 import { useBattleCards } from '@/hooks'
@@ -7,6 +7,7 @@ import type { Person, Starship, BattleStatistics, MutationResponse, BattlePlayer
 import { formatAttributeValue } from '@/utils/game-utils'
 import { graphqlClient } from '@/config/graphql-client'
 import { SAVE_BATTLE_RESULT, GET_BATTLE_STATISTICS } from '@/graphql/queries'
+import { BattleCard } from '@/components/BattleCard'
 
 type ResourceType = 'people' | 'starships'
 type GameState = 'idle' | 'loading' | 'playing' | 'showingWinner'
@@ -105,7 +106,6 @@ function Game() {
   }
   
   const isGameLoading = gameState === 'loading' || isLoading
-  const attribute = resourceType === 'people' ? 'mass' : 'crew'
   
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -169,98 +169,28 @@ function Game() {
           
           {/* Battle Cards */}
           <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', flexWrap: 'wrap' }}>
-            {/* Left Card */}
-            <Card sx={{ 
-              minWidth: 300, 
-              minHeight: 200,
-              border: winner === 'left' ? '2px solid' : '1px solid',
-              borderColor: winner === 'left' ? 'success.main' : winner === 'tie' ? 'warning.main' : 'divider',
-            }}>
-              <CardContent>
-                {gameState === 'showingWinner' && (winner === 'left' || winner === 'tie') && (
-                  <Chip 
-                    label={winner === 'left' ? 'WINNER!' : 'TIE'} 
-                    color={winner === 'left' ? 'success' : 'warning'}
-                    size="small"
-                    sx={{ float: 'right' }}
-                  />
-                )}
-                {isGameLoading || leftCard.isLoading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 150 }}>
-                    <CircularProgress />
-                  </Box>
-                ) : leftCard.data ? (
-                  <>
-                    <Typography variant="h5" gutterBottom>{leftCard.data.name}</Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {resourceType === 'people' ? 'Person' : 'Starship'}
-                    </Typography>
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="h6" color="primary">
-                        {formatAttributeValue(
-                          resourceType === 'people' 
-                            ? (leftCard.data as Person).mass 
-                            : (leftCard.data as Starship).crew,
-                          attribute
-                        )}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {attribute.charAt(0).toUpperCase() + attribute.slice(1)}
-                      </Typography>
-                    </Box>
-                  </>
-                ) : null}
-              </CardContent>
-            </Card>
+            <BattleCard 
+              card={leftCard}
+              resourceType={resourceType}
+              winner={winner}
+              gameState={gameState}
+              position="left"
+              isGameLoading={isGameLoading}
+            />
             
             {/* VS */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography variant="h4" color="text.secondary">VS</Typography>
             </Box>
             
-            {/* Right Card */}
-            <Card sx={{ 
-              minWidth: 300, 
-              minHeight: 200,
-              border: winner === 'right' ? '2px solid' : '1px solid',
-              borderColor: winner === 'right' ? 'success.main' : winner === 'tie' ? 'warning.main' : 'divider',
-            }}>
-              <CardContent>
-                {gameState === 'showingWinner' && (winner === 'right' || winner === 'tie') && (
-                  <Chip 
-                    label={winner === 'right' ? 'WINNER!' : 'TIE'} 
-                    color={winner === 'right' ? 'success' : 'warning'}
-                    size="small"
-                    sx={{ float: 'right' }}
-                  />
-                )}
-                {isGameLoading || rightCard.isLoading ? (
-                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 150 }}>
-                    <CircularProgress />
-                  </Box>
-                ) : rightCard.data ? (
-                  <>
-                    <Typography variant="h5" gutterBottom>{rightCard.data.name}</Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      {resourceType === 'people' ? 'Person' : 'Starship'}
-                    </Typography>
-                    <Box sx={{ mt: 2 }}>
-                      <Typography variant="h6" color="primary">
-                        {formatAttributeValue(
-                          resourceType === 'people' 
-                            ? (rightCard.data as Person).mass 
-                            : (rightCard.data as Starship).crew,
-                          attribute
-                        )}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {attribute.charAt(0).toUpperCase() + attribute.slice(1)}
-                      </Typography>
-                    </Box>
-                  </>
-                ) : null}
-              </CardContent>
-            </Card>
+            <BattleCard 
+              card={rightCard}
+              resourceType={resourceType}
+              winner={winner}
+              gameState={gameState}
+              position="right"
+              isGameLoading={isGameLoading}
+            />
           </Box>
           
           {/* Action Button */}
