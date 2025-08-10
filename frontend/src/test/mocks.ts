@@ -1,4 +1,4 @@
-import type { Person, Starship } from '@/generated/graphql'
+import type { Person, Starship } from '@/generated/graphql';
 
 export const mockPerson: Person = {
   id: '1',
@@ -12,7 +12,7 @@ export const mockPerson: Person = {
   gender: 'male',
   created: '2014-12-09T13:50:51.644000Z',
   edited: '2014-12-20T21:17:56.891000Z',
-}
+};
 
 export const mockPerson2: Person = {
   id: '2',
@@ -26,7 +26,7 @@ export const mockPerson2: Person = {
   gender: 'male',
   created: '2014-12-10T15:18:20.704000Z',
   edited: '2014-12-20T21:17:50.313000Z',
-}
+};
 
 export const mockStarship: Starship = {
   id: '1',
@@ -45,7 +45,7 @@ export const mockStarship: Starship = {
   starshipClass: 'Light freighter',
   created: '2014-12-10T16:59:45.094000Z',
   edited: '2014-12-20T21:23:49.880000Z',
-}
+};
 
 export const mockStarship2: Starship = {
   id: '2',
@@ -64,4 +64,4 @@ export const mockStarship2: Starship = {
   starshipClass: 'Star Destroyer',
   created: '2014-12-10T15:08:19.848000Z',
   edited: '2014-12-20T21:23:49.870000Z',
-}
+};

@@ -1,13 +1,13 @@
-import { useState } from 'react'
-import { 
-  Box, 
-  Typography, 
-  Paper, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
+import { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
   TableRow,
   Pagination,
   CircularProgress,
@@ -17,19 +17,19 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
-  Button
-} from '@mui/material'
-import { useQuery } from '@tanstack/react-query'
-import { format } from 'date-fns'
-import { graphqlClient } from '@/config/graphql-client'
-import { GET_BATTLE_HISTORY } from '@/graphql/queries'
-import type { BattleHistoryResponse } from '@/generated/graphql'
+  Button,
+} from '@mui/material';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { graphqlClient } from '@/config/graphql-client';
+import { GET_BATTLE_HISTORY } from '@/graphql/queries';
+import type { BattleHistoryResponse } from '@/generated/graphql';
 
 export function Results() {
-  const [page, setPage] = useState(1)
-  const [resourceTypeFilter, setResourceTypeFilter] = useState<string>('')
-  const [winnerFilter, setWinnerFilter] = useState<string>('')
-  const limit = 10
+  const [page, setPage] = useState(1);
+  const [resourceTypeFilter, setResourceTypeFilter] = useState<string>('');
+  const [winnerFilter, setWinnerFilter] = useState<string>('');
+  const limit = 10;
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['battleHistory', page, resourceTypeFilter, winnerFilter],
@@ -39,59 +39,62 @@ export function Results() {
         limit,
         ...(resourceTypeFilter && { resourceType: resourceTypeFilter }),
         ...(winnerFilter && { winner: winnerFilter }),
-      }
-      
+      };
+
       const response = await graphqlClient.request<{ getBattleHistory: BattleHistoryResponse }>(
         GET_BATTLE_HISTORY,
         variables
-      )
-      return response.getBattleHistory
+      );
+      return response.getBattleHistory;
     },
     staleTime: 5 * 60 * 1000, // Consider data stale after 5 minutes
     refetchOnMount: true, // Refetch when component first mounts
     refetchOnWindowFocus: true, // Refetch when window regains focus
-  })
-
+  });
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, newPage: number) => {
-    setPage(newPage)
-  }
+    setPage(newPage);
+  };
 
   const handleResourceTypeChange = (value: string) => {
-    setResourceTypeFilter(value)
-    setPage(1) // Reset to first page when filtering
-  }
+    setResourceTypeFilter(value);
+    setPage(1); // Reset to first page when filtering
+  };
 
   const handleWinnerChange = (value: string) => {
-    setWinnerFilter(value)
-    setPage(1) // Reset to first page when filtering
-  }
+    setWinnerFilter(value);
+    setPage(1); // Reset to first page when filtering
+  };
 
   const clearFilters = () => {
-    setResourceTypeFilter('')
-    setWinnerFilter('')
-    setPage(1)
-  }
+    setResourceTypeFilter('');
+    setWinnerFilter('');
+    setPage(1);
+  };
 
   const getWinnerColor = (winner: string): 'success' | 'error' | 'warning' | 'default' => {
     switch (winner) {
-      case 'player': return 'success'
-      case 'computer': return 'error'
-      case 'draw': return 'warning'
-      default: return 'default'
+      case 'player':
+        return 'success';
+      case 'computer':
+        return 'error';
+      case 'draw':
+        return 'warning';
+      default:
+        return 'default';
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    return format(new Date(dateString), 'MMM dd, yyyy HH:mm')
-  }
+    return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
+  };
 
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
         <CircularProgress />
       </Box>
-    )
+    );
   }
 
   if (error) {
@@ -102,7 +105,7 @@ export function Results() {
           Retry
         </Button>
       </Alert>
-    )
+    );
   }
 
   return (
@@ -122,7 +125,7 @@ export function Results() {
             <Select
               value={resourceTypeFilter}
               label="Resource Type"
-              onChange={(e) => handleResourceTypeChange(e.target.value)}
+              onChange={e => handleResourceTypeChange(e.target.value)}
             >
               <MenuItem value="">All</MenuItem>
               <MenuItem value="people">People</MenuItem>
@@ -135,7 +138,7 @@ export function Results() {
             <Select
               value={winnerFilter}
               label="Winner"
-              onChange={(e) => handleWinnerChange(e.target.value)}
+              onChange={e => handleWinnerChange(e.target.value)}
             >
               <MenuItem value="">All</MenuItem>
               <MenuItem value="player">Player</MenuItem>
@@ -144,9 +147,9 @@ export function Results() {
             </Select>
           </FormControl>
 
-          <Button 
-            variant="outlined" 
-            size="small" 
+          <Button
+            variant="outlined"
+            size="small"
             onClick={clearFilters}
             disabled={!resourceTypeFilter && !winnerFilter}
           >
@@ -196,16 +199,16 @@ export function Results() {
                 </TableCell>
               </TableRow>
             ) : (
-              data?.items.map((battle) => (
+              data?.items.map(battle => (
                 <TableRow key={battle.id} hover>
                   <TableCell>
-                    <Typography variant="body2">
-                      {formatDate(battle.createdAt)}
-                    </Typography>
+                    <Typography variant="body2">{formatDate(battle.createdAt)}</Typography>
                   </TableCell>
                   <TableCell>
-                    <Chip 
-                      label={battle.resourceType.charAt(0).toUpperCase() + battle.resourceType.slice(1)}
+                    <Chip
+                      label={
+                        battle.resourceType.charAt(0).toUpperCase() + battle.resourceType.slice(1)
+                      }
                       size="small"
                       variant="outlined"
                     />
@@ -263,5 +266,5 @@ export function Results() {
         </Box>
       )}
     </Box>
-  )
+  );
 }

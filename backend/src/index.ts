@@ -17,21 +17,19 @@ async function startServer() {
   const app = express();
   const httpServer = http.createServer(app);
   const PORT = process.env.PORT || 4000;
-  
+
   app.use(cors());
   app.use(express.json());
-  
+
   const schema = makeExecutableSchema({
     typeDefs,
     resolvers,
   });
-  
+
   const server = new ApolloServer<GraphQLContext>({
     schema,
-    plugins: [
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-    ],
-    formatError: (formattedError) => {
+    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    formatError: formattedError => {
       console.error('GraphQL Error:', formattedError);
       return {
         ...formattedError,
@@ -42,23 +40,23 @@ async function startServer() {
       };
     },
   });
-  
+
   await server.start();
-  
+
   app.use(
     '/graphql',
     expressMiddleware(server, {
       context: async () => ({ db }),
     })
   );
-  
+
   httpServer.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
     console.log(`📊 GraphQL endpoint at http://localhost:${PORT}/graphql`);
   });
 }
 
-startServer().catch((error) => {
+startServer().catch(error => {
   console.error('Failed to start server:', error);
   process.exit(1);
 });

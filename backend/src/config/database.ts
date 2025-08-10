@@ -9,22 +9,22 @@ if (!process.env.DATABASE_URL) {
 }
 
 const isProduction = process.env.NODE_ENV === 'production';
-const sslConfig = isProduction 
+const sslConfig = isProduction
   ? { rejectUnauthorized: true } // Secure: verify SSL certificates in production
   : { rejectUnauthorized: false }; // Relaxed: allow self-signed certs in development
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 10, 
-  idleTimeoutMillis: 30000, 
-  connectionTimeoutMillis: 2000, 
-  ssl: sslConfig
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+  ssl: sslConfig,
 });
 
 async function verifyConnection(): Promise<void> {
   const maxRetries = 5;
-  const retryDelay = 5000; 
-  
+  const retryDelay = 5000;
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       await pool.query('SELECT 1');
@@ -51,7 +51,7 @@ pool.on('connect', () => {
   console.log('Database pool connected');
 });
 
-pool.on('error', (err) => {
+pool.on('error', err => {
   console.error('Database error:', err);
 });
 

@@ -65,7 +65,8 @@ describe('Starships Resolvers', () => {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
-        limit: jest.fn()
+        limit: jest
+          .fn()
           .mockResolvedValueOnce([mockStarships[0]])
           .mockResolvedValueOnce([mockStarships[1]])
           .mockResolvedValueOnce([mockStarships[2]]),
@@ -87,7 +88,7 @@ describe('Starships Resolvers', () => {
       expect(names).toContain('X-wing');
       expect(names).toContain('Millennium Falcon');
       expect(names).toContain('Death Star');
-      
+
       expect(mockDb.limit).toHaveBeenCalledTimes(3);
     });
 

@@ -10,11 +10,11 @@ export const starshipsResolvers = {
         .from(starships)
         .orderBy(sql`RANDOM()`)
         .limit(1);
-      
+
       if (result.length === 0) {
         throw new Error('No starships found in database');
       }
-      
+
       const starship = result[0];
       return {
         ...starship,

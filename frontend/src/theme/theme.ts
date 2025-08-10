@@ -1,16 +1,16 @@
-import { createTheme } from '@mui/material'
+import { createTheme } from '@mui/material';
 
 export const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#FFD700', 
+      main: '#FFD700',
     },
     secondary: {
-      main: '#1E90FF', 
+      main: '#1E90FF',
     },
     background: {
-      default: '#000000', 
+      default: '#000000',
       paper: '#1a1a1a',
     },
     text: {
@@ -29,4 +29,4 @@ export const theme = createTheme({
       fontWeight: 600,
     },
   },
-})
+});

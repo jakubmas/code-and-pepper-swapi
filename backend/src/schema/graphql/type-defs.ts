@@ -14,7 +14,7 @@ export const typeDefs = gql`
     created: String
     edited: String
   }
-  
+
   type Starship {
     id: ID!
     name: String!
@@ -33,7 +33,7 @@ export const typeDefs = gql`
     created: String
     edited: String
   }
-  
+
   type BattlePlayer {
     id: Int!
     name: String!

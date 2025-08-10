@@ -174,9 +174,7 @@
         "people_name_unique": {
           "name": "people_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},
@@ -293,9 +291,7 @@
         "starships_name_unique": {
           "name": "starships_name_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "name"
-          ]
+          "columns": ["name"]
         }
       },
       "policies": {},

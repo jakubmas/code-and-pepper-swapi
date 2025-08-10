@@ -16,13 +16,14 @@ export function useBattleCards(
   resourceType: 'people' | 'starships',
   enabled: boolean = true
 ): UseBattleCardsResult {
-  
   const queryFn = async () => {
     if (resourceType === 'people') {
       const data = await graphqlClient.request<{ getRandomPerson: Person }>(GET_RANDOM_PERSON);
       return data.getRandomPerson;
     } else {
-      const data = await graphqlClient.request<{ getRandomStarship: Starship }>(GET_RANDOM_STARSHIP);
+      const data = await graphqlClient.request<{ getRandomStarship: Starship }>(
+        GET_RANDOM_STARSHIP
+      );
       return data.getRandomStarship;
     }
   };
@@ -41,14 +42,14 @@ export function useBattleCards(
       },
     ],
   });
-  
+
   const [leftCard, rightCard] = queries;
-  
+
   const refetchBoth = () => {
     leftCard.refetch();
     rightCard.refetch();
   };
-  
+
   return {
     leftCard,
     rightCard,

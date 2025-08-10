@@ -22,11 +22,7 @@ interface GetBattleHistoryArgs {
 
 export const battlesResolvers = {
   Query: {
-    getBattleHistory: async (
-      _: unknown,
-      args: GetBattleHistoryArgs,
-      context: GraphQLContext
-    ) => {
+    getBattleHistory: async (_: unknown, args: GetBattleHistoryArgs, context: GraphQLContext) => {
       const { page = 1, limit = 10, resourceType, winner } = args;
 
       // Validate pagination parameters
@@ -98,11 +94,7 @@ export const battlesResolvers = {
       }
     },
 
-    getBattleStatistics: async (
-      _: unknown,
-      __: unknown,
-      context: GraphQLContext
-    ) => {
+    getBattleStatistics: async (_: unknown, __: unknown, context: GraphQLContext) => {
       try {
         const [{ playerWins }] = await context.db
           .select({ playerWins: count() })
@@ -125,11 +117,7 @@ export const battlesResolvers = {
     },
   },
   Mutation: {
-    saveBattleResult: async (
-      _: unknown,
-      args: SaveBattleResultArgs,
-      context: GraphQLContext
-    ) => {
+    saveBattleResult: async (_: unknown, args: SaveBattleResultArgs, context: GraphQLContext) => {
       const { winner, resourceType, players } = args;
 
       // Validate input
@@ -152,13 +140,11 @@ export const battlesResolvers = {
       }
 
       try {
-        await context.db
-          .insert(battles)
-          .values({
-            winner,
-            resourceType,
-            players,
-          });
+        await context.db.insert(battles).values({
+          winner,
+          resourceType,
+          players,
+        });
 
         return {
           success: true,

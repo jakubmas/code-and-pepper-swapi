@@ -10,10 +10,9 @@ async function checkData() {
     const randomStarship = await db.execute(sql`
       SELECT name, crew FROM starships ORDER BY RANDOM() LIMIT 3
     `);
-    
+
     console.log('Random people:', randomPerson.rows);
     console.log('Random starships:', randomStarship.rows);
-    
   } catch (error) {
     console.error('Error:', error);
   } finally {

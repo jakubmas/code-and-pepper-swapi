@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Box,
-  Container,
-} from '@mui/material';
+import { AppBar, Toolbar, Typography, Button, Box, Container } from '@mui/material';
 import { Home, History } from '@mui/icons-material';
 import { Link, useLocation } from 'react-router-dom';
 import { useIsSmallScreen } from '@/hooks';
@@ -14,7 +7,7 @@ import { useIsSmallScreen } from '@/hooks';
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const isSmallScreen = useIsSmallScreen();
-  
+
   return (
     <>
       <AppBar position="sticky" elevation={2}>
@@ -50,7 +43,7 @@ export const Navbar: React.FC = () => {
                 Star Wars Battle
               </Typography>
             </Box>
-            
+
             <Box sx={{ display: 'flex', gap: 1 }}>
               <Button
                 color="inherit"
@@ -61,17 +54,16 @@ export const Navbar: React.FC = () => {
                 sx={{
                   textTransform: 'none',
                   fontWeight: 500,
-                  backgroundColor: location.pathname === '/' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  backgroundColor:
+                    location.pathname === '/' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   },
                 }}
               >
-                <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                  Game
-                </Box>
+                <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>Game</Box>
               </Button>
-              
+
               <Button
                 color="inherit"
                 component={Link}
@@ -81,18 +73,17 @@ export const Navbar: React.FC = () => {
                 sx={{
                   textTransform: 'none',
                   fontWeight: 500,
-                  backgroundColor: location.pathname === '/results' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  backgroundColor:
+                    location.pathname === '/results' ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
                   '&:hover': {
                     backgroundColor: 'rgba(255, 255, 255, 0.1)',
                   },
                 }}
               >
-                <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                  Results
-                </Box>
+                <Box sx={{ display: { xs: 'none', sm: 'inline' } }}>Results</Box>
               </Button>
             </Box>
-        </Toolbar>
+          </Toolbar>
         </Container>
       </AppBar>
     </>

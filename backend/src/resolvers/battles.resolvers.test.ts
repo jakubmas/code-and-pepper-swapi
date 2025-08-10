@@ -30,7 +30,7 @@ describe('Battles Resolvers', () => {
             resourceType: 'people',
             players: [
               { id: 1, name: 'Luke', value: '77 kg' },
-              { id: 2, name: 'Vader', value: '136 kg' }
+              { id: 2, name: 'Vader', value: '136 kg' },
             ],
             createdAt: new Date('2024-01-01T00:00:00Z'),
           },
@@ -42,24 +42,22 @@ describe('Battles Resolvers', () => {
           where: jest.fn().mockResolvedValue([{ total: 1 }]),
         }));
 
-        // Mock data query  
+        // Mock data query
         mockDb.offset.mockResolvedValue(mockBattles);
 
         const args = { page: 1, limit: 10 };
-        const result = await battlesResolvers.Query.getBattleHistory(
-          undefined,
-          args,
-          mockContext
-        );
+        const result = await battlesResolvers.Query.getBattleHistory(undefined, args, mockContext);
 
         expect(result).toEqual({
-          items: [{
-            id: 1,
-            winner: 'player',
-            resourceType: 'people',
-            players: mockBattles[0].players,
-            createdAt: '2024-01-01T00:00:00.000Z',
-          }],
+          items: [
+            {
+              id: 1,
+              winner: 'player',
+              resourceType: 'people',
+              players: mockBattles[0].players,
+              createdAt: '2024-01-01T00:00:00.000Z',
+            },
+          ],
           pageInfo: {
             currentPage: 1,
             totalPages: 1,
@@ -126,7 +124,7 @@ describe('Battles Resolvers', () => {
 
       it('should handle database errors gracefully', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-        
+
         mockDb.select.mockImplementationOnce(() => {
           throw new Error('Database error');
         });
@@ -136,7 +134,10 @@ describe('Battles Resolvers', () => {
           battlesResolvers.Query.getBattleHistory(undefined, args, mockContext)
         ).rejects.toThrow('Failed to fetch battle history');
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching battle history:', expect.any(Error));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error fetching battle history:',
+          expect.any(Error)
+        );
         consoleErrorSpy.mockRestore();
       });
     });
@@ -236,7 +237,7 @@ describe('Battles Resolvers', () => {
 
       it('should handle database errors gracefully', async () => {
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-        
+
         // Mock first query to throw error
         mockDb.select.mockImplementationOnce(() => {
           throw new Error('Database connection failed');
@@ -246,7 +247,10 @@ describe('Battles Resolvers', () => {
           battlesResolvers.Query.getBattleStatistics(undefined, undefined, mockContext)
         ).rejects.toThrow('Failed to fetch battle statistics');
 
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching battle statistics:', expect.any(Error));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error fetching battle statistics:',
+          expect.any(Error)
+        );
         consoleErrorSpy.mockRestore();
       });
     });
@@ -437,7 +441,7 @@ describe('Battles Resolvers', () => {
       it('should handle database errors gracefully', async () => {
         // Mock console.error to suppress expected error output
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-        
+
         // Override the default mock to simulate an error
         mockDb.values.mockRejectedValue(new Error('Database error'));
 
@@ -455,7 +459,10 @@ describe('Battles Resolvers', () => {
         ).rejects.toThrow('Failed to save battle result');
 
         // Verify console.error was called and restore it
-        expect(consoleErrorSpy).toHaveBeenCalledWith('Error saving battle result:', expect.any(Error));
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error saving battle result:',
+          expect.any(Error)
+        );
         consoleErrorSpy.mockRestore();
       });
     });

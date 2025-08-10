@@ -1,9 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import Game from './Game'
-import { mockPerson, mockPerson2 } from './test/mocks'
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import Game from './Game';
+import { mockPerson, mockPerson2 } from './test/mocks';
 
 // Mock the graphql-request module
 vi.mock('graphql-request', () => ({
@@ -11,7 +11,7 @@ vi.mock('graphql-request', () => ({
     request: vi.fn(),
   })),
   gql: (str: TemplateStringsArray) => str[0],
-}))
+}));
 
 // Mock the hooks
 vi.mock('@/hooks', () => ({
@@ -23,173 +23,173 @@ vi.mock('@/hooks', () => ({
     refetchBoth: vi.fn(),
   })),
   useIsSmallScreen: vi.fn(() => false),
-}))
+}));
 
 const renderApp = () => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: { retry: false },
     },
-  })
-  
+  });
+
   return render(
     <QueryClientProvider client={queryClient}>
       <Game />
     </QueryClientProvider>
-  )
-}
+  );
+};
 
 describe('Game Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render initial idle state with Play Game button', () => {
-    renderApp()
-    
-    expect(screen.getByText('Play Game')).toBeInTheDocument()
-    expect(screen.getByText('Overall Score')).toBeInTheDocument()
-    expect(screen.getByText('Choose Resource Type')).toBeInTheDocument()
-  })
+    renderApp();
+
+    expect(screen.getByText('Play Game')).toBeInTheDocument();
+    expect(screen.getByText('Overall Score')).toBeInTheDocument();
+    expect(screen.getByText('Choose Resource Type')).toBeInTheDocument();
+  });
 
   it('should display score counter with loading state initially', () => {
-    renderApp()
-    
-    expect(screen.getByText('Overall Score')).toBeInTheDocument()
-    
-    const spinner = screen.getByRole('progressbar')
-    expect(spinner).toBeInTheDocument()
-    
-    expect(screen.queryByText('Player')).not.toBeInTheDocument()
-    expect(screen.queryByText('Computer')).not.toBeInTheDocument()
-  })
+    renderApp();
+
+    expect(screen.getByText('Overall Score')).toBeInTheDocument();
+
+    const spinner = screen.getByRole('progressbar');
+    expect(spinner).toBeInTheDocument();
+
+    expect(screen.queryByText('Player')).not.toBeInTheDocument();
+    expect(screen.queryByText('Computer')).not.toBeInTheDocument();
+  });
 
   it('should allow switching between People and Starships', async () => {
-    const user = userEvent.setup()
-    renderApp()
-    
-    const peopleButton = screen.getByRole('button', { name: /people/i })
-    const starshipsButton = screen.getByRole('button', { name: /starships/i })
-    
+    const user = userEvent.setup();
+    renderApp();
+
+    const peopleButton = screen.getByRole('button', { name: /people/i });
+    const starshipsButton = screen.getByRole('button', { name: /starships/i });
+
     // Both buttons should be present
-    expect(peopleButton).toBeInTheDocument()
-    expect(starshipsButton).toBeInTheDocument()
-    
+    expect(peopleButton).toBeInTheDocument();
+    expect(starshipsButton).toBeInTheDocument();
+
     // Click on Starships
-    await user.click(starshipsButton)
-    
+    await user.click(starshipsButton);
+
     // Buttons should still be present (testing that they work without errors)
-    expect(peopleButton).toBeInTheDocument()
-    expect(starshipsButton).toBeInTheDocument()
-  })
+    expect(peopleButton).toBeInTheDocument();
+    expect(starshipsButton).toBeInTheDocument();
+  });
 
   it('should show VS text between cards area', () => {
-    renderApp()
-    
-    expect(screen.getByText('VS')).toBeInTheDocument()
-  })
+    renderApp();
+
+    expect(screen.getByText('VS')).toBeInTheDocument();
+  });
 
   it('should start game when Play Game button is clicked', async () => {
-    const { useBattleCards } = await import('@/hooks')
-    const mockRefetchBoth = vi.fn()
-    
+    const { useBattleCards } = await import('@/hooks');
+    const mockRefetchBoth = vi.fn();
+
     vi.mocked(useBattleCards).mockReturnValue({
-      leftCard: { 
-        data: mockPerson, 
-        isLoading: false, 
+      leftCard: {
+        data: mockPerson,
+        isLoading: false,
         isError: false,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       } as any,
-      rightCard: { 
-        data: mockPerson2, 
-        isLoading: false, 
+      rightCard: {
+        data: mockPerson2,
+        isLoading: false,
         isError: false,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       } as any,
       isLoading: false,
       isError: false,
       refetchBoth: mockRefetchBoth,
-    })
-    
-    const user = userEvent.setup()
-    renderApp()
-    
-    const playButton = screen.getByRole('button', { name: /play game/i })
-    await user.click(playButton)
-    
+    });
+
+    const user = userEvent.setup();
+    renderApp();
+
+    const playButton = screen.getByRole('button', { name: /play game/i });
+    await user.click(playButton);
+
     // Should call refetchBoth to get new data
-    expect(mockRefetchBoth).toHaveBeenCalled()
-    
+    expect(mockRefetchBoth).toHaveBeenCalled();
+
     // Should display the cards with data
     await waitFor(() => {
-      expect(screen.getByText('Luke Skywalker')).toBeInTheDocument()
-      expect(screen.getByText('Darth Vader')).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByText('Luke Skywalker')).toBeInTheDocument();
+      expect(screen.getByText('Darth Vader')).toBeInTheDocument();
+    });
+  });
 
   it('should show Play Again button after game is played', async () => {
-    const { useBattleCards } = await import('@/hooks')
-    
+    const { useBattleCards } = await import('@/hooks');
+
     vi.mocked(useBattleCards).mockReturnValue({
-      leftCard: { 
-        data: mockPerson, 
-        isLoading: false, 
+      leftCard: {
+        data: mockPerson,
+        isLoading: false,
         isError: false,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       } as any,
-      rightCard: { 
-        data: mockPerson2, 
-        isLoading: false, 
+      rightCard: {
+        data: mockPerson2,
+        isLoading: false,
         isError: false,
-        refetch: vi.fn()
+        refetch: vi.fn(),
       } as any,
       isLoading: false,
       isError: false,
       refetchBoth: vi.fn(),
-    })
-    
-    const user = userEvent.setup()
-    renderApp()
-    
-    const playButton = screen.getByRole('button', { name: /play game/i })
-    await user.click(playButton)
-    
+    });
+
+    const user = userEvent.setup();
+    renderApp();
+
+    const playButton = screen.getByRole('button', { name: /play game/i });
+    await user.click(playButton);
+
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument()
-    })
-  })
+      expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument();
+    });
+  });
 
   it('should display error state when there is an error', async () => {
-    const { useBattleCards } = await import('@/hooks')
-    
+    const { useBattleCards } = await import('@/hooks');
+
     vi.mocked(useBattleCards).mockReturnValue({
       leftCard: { data: null, isLoading: false, isError: true, refetch: vi.fn() } as any,
       rightCard: { data: null, isLoading: false, isError: false, refetch: vi.fn() } as any,
       isLoading: false,
       isError: true,
       refetchBoth: vi.fn(),
-    })
-    
-    renderApp()
-    
-    expect(screen.getByText(/error loading data/i)).toBeInTheDocument()
-  })
+    });
+
+    renderApp();
+
+    expect(screen.getByText(/error loading data/i)).toBeInTheDocument();
+  });
 
   it('should show loading state when fetching data', async () => {
-    const { useBattleCards } = await import('@/hooks')
-    
+    const { useBattleCards } = await import('@/hooks');
+
     vi.mocked(useBattleCards).mockReturnValue({
       leftCard: { data: null, isLoading: true, isError: false, refetch: vi.fn() } as any,
       rightCard: { data: null, isLoading: true, isError: false, refetch: vi.fn() } as any,
       isLoading: true,
       isError: false,
       refetchBoth: vi.fn(),
-    })
-    
-    renderApp()
-    
+    });
+
+    renderApp();
+
     // Should show loading spinners
-    const spinners = screen.getAllByRole('progressbar')
-    expect(spinners.length).toBeGreaterThan(0)
-  })
-})
+    const spinners = screen.getAllByRole('progressbar');
+    expect(spinners.length).toBeGreaterThan(0);
+  });
+});

@@ -50,7 +50,8 @@ describe('People Resolvers', () => {
         select: jest.fn().mockReturnThis(),
         from: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
-        limit: jest.fn()
+        limit: jest
+          .fn()
           .mockResolvedValueOnce([mockPeople[0]])
           .mockResolvedValueOnce([mockPeople[1]])
           .mockResolvedValueOnce([mockPeople[2]]),
@@ -72,7 +73,7 @@ describe('People Resolvers', () => {
       expect(names).toContain('Luke Skywalker');
       expect(names).toContain('Darth Vader');
       expect(names).toContain('Leia Organa');
-      
+
       expect(mockDb.limit).toHaveBeenCalledTimes(3);
     });
 

@@ -10,11 +10,11 @@ export const peopleResolvers = {
         .from(people)
         .orderBy(sql`RANDOM()`)
         .limit(1);
-      
+
       if (result.length === 0) {
         throw new Error('No people found in database');
       }
-      
+
       const person = result[0];
       return {
         ...person,
