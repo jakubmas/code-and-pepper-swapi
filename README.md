@@ -10,10 +10,13 @@ A full-stack application that lets players battle Star Wars characters and stars
 ## 🚀 Features
 
 - **Random Battles**: Face off random Star Wars characters (by mass) or starships (by crew size)
-- **Score Tracking**: Persistent score keeping with localStorage
+- **Persistent Score Tracking**: Database-backed statistics with real-time updates
+- **Battle History**: View paginated history of all battles with filtering options
 - **Resource Switching**: Toggle between People and Starships battles
 - **Responsive Design**: Works seamlessly on desktop and mobile devices
 - **Real-time Updates**: Instant winner determination with visual feedback
+- **Code Splitting**: Lazy-loaded components for optimal performance
+- **Type Safety**: Generated GraphQL types for end-to-end type safety
 - **Error Handling**: Graceful error states and loading indicators
 
 ## 🛠 Tech Stack
@@ -23,6 +26,8 @@ A full-stack application that lets players battle Star Wars characters and stars
 - **Material-UI (MUI)** for component library
 - **TanStack Query** for data fetching and caching
 - **GraphQL Request** for API communication
+- **React Router** for navigation
+- **GraphQL Code Generator** for type-safe API integration
 - **Vite** for build tooling
 - **Vitest** for testing
 
@@ -188,6 +193,54 @@ query GetRandomStarship {
 }
 ```
 
+#### Get Battle History
+```graphql
+query GetBattleHistory($page: Int, $limit: Int, $resourceType: String, $winner: String) {
+  getBattleHistory(page: $page, limit: $limit, resourceType: $resourceType, winner: $winner) {
+    items {
+      id
+      winner
+      resourceType
+      players {
+        id
+        name
+        value
+      }
+      createdAt
+    }
+    pageInfo {
+      currentPage
+      totalPages
+      hasNextPage
+      hasPreviousPage
+      totalCount
+    }
+  }
+}
+```
+
+#### Get Battle Statistics
+```graphql
+query GetBattleStatistics {
+  getBattleStatistics {
+    playerWins
+    computerWins
+  }
+}
+```
+
+### Available Mutations
+
+#### Save Battle Result
+```graphql
+mutation SaveBattleResult($winner: String!, $resourceType: String!, $players: [BattlePlayerInput!]!) {
+  saveBattleResult(winner: $winner, resourceType: $resourceType, players: $players) {
+    success
+    message
+  }
+}
+```
+
 ## 📁 Project Structure
 
 ```
@@ -195,15 +248,17 @@ star-wars-battle/
 ├── frontend/               # React application
 │   ├── src/
 │   │   ├── components/    # UI components
-│   │   │   └── layout/    # Layout components (Navbar)
+│   │   │   ├── layout/    # Layout components (Navbar)
+│   │   │   └── BattleCard.tsx  # Reusable battle card component
 │   │   ├── hooks/         # Custom React hooks
 │   │   ├── graphql/       # GraphQL queries
-│   │   ├── types/         # TypeScript type definitions
+│   │   ├── generated/     # Auto-generated GraphQL types
 │   │   ├── utils/         # Utility functions
 │   │   ├── config/        # Configuration files
 │   │   ├── theme/         # MUI theme configuration
 │   │   └── test/          # Test utilities and mocks
 │   ├── public/            # Static assets
+│   ├── codegen.yml        # GraphQL Code Generator config
 │   └── dist/              # Production build
 │
 ├── backend/                # Node.js GraphQL server
@@ -269,6 +324,7 @@ npm run build
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 - `npm run type-check` - Check TypeScript types
+- `npm run codegen` - Generate GraphQL types
 - `npm test` - Run tests in watch mode
 
 ### Backend
@@ -290,9 +346,10 @@ npm run build
 
 ## 📝 Testing Strategy
 
-- **Frontend**: Integration tests using Vitest and Testing Library
-- **Backend**: Unit tests for resolvers using Jest
-- **Coverage**: Aim for >70% code coverage
+- **Frontend**: Integration tests using Vitest and Testing Library (40 tests)
+- **Backend**: Unit tests for resolvers using Jest (24 tests)
+- **Coverage**: Backend at 80%+ function coverage, Frontend with component testing
+- **GraphQL**: Schema validation and type safety through generated types
 - **Philosophy**: Test user behavior, not implementation details
 
 ## 🐛 Troubleshooting
