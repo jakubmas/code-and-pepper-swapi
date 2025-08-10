@@ -22,6 +22,7 @@ A full-stack application that lets players battle Star Wars characters and stars
 ## 🛠 Tech Stack
 
 ### Frontend
+
 - **React 19** with TypeScript
 - **Material-UI (MUI)** for component library
 - **TanStack Query** for data fetching and caching
@@ -32,6 +33,7 @@ A full-stack application that lets players battle Star Wars characters and stars
 - **Vitest** for testing
 
 ### Backend
+
 - **Node.js** with TypeScript
 - **Apollo Server** for GraphQL API
 - **Drizzle ORM** for database management
@@ -40,61 +42,49 @@ A full-stack application that lets players battle Star Wars characters and stars
 
 ## 📋 Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm 9+
 - PostgreSQL database (AWS RDS or local)
 
 ## 🔧 Installation
 
 ### 1. Clone the Repository
+
 ```bash
 git clone [repository-url]
 cd star-wars-battle
 ```
 
-### 2. Install Dependencies
-```bash
-# Install all dependencies (frontend, backend, and root)
-npm install
-```
+### 2. Environment Setup
 
-### 3. Environment Setup
-
-Create a `.env` file in the backend directory:
+Create a `.env.local` file in the backend directory:
 
 ```bash
-cd backend
-cp .env.example .env
-```
-
-Edit `backend/.env` with your database credentials:
-```env
+# Create env file
+cat > backend/.env.local << 'EOF'
 DATABASE_URL=postgresql://user:password@host:port/database
 NODE_ENV=development
-PORT=4000
+EOF
 ```
 
-### 4. Database Setup
+### 3. Quick Setup (Recommended)
+
+Run the setup script to install all dependencies:
 
 ```bash
-# Navigate to backend directory
-cd backend
-
-# Run database migrations
-npm run db:migrate
-
-# Seed the database with Star Wars data
-npm run db:seed
-
-# (Optional) Verify the data
-npm run db:check
+npm run setup
 ```
+
+This will install dependencies for the root project, backend, and frontend.
+
+**Note:** The database is already configured on AWS RDS with all tables and data. You don't need to run migrations or seed data.
 
 ## 🏃‍♂️ Running the Application
 
 ### Development Mode
 
 From the project root:
+
 ```bash
 # Start both frontend and backend concurrently
 npm run dev
@@ -103,15 +93,32 @@ npm run dev
 Or run them separately:
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd backend
 npm run dev
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 npm run dev
+```
+
+### ⚠️ Common Issues When Starting
+
+#### Database Connection Blocked
+If the backend shows connection errors, your network might be blocking port 5432. See the [Troubleshooting](#-troubleshooting) section for solutions, especially if you're on a corporate network.
+
+#### Ports Already in Use
+If you get "port already in use" errors:
+```bash
+# Kill process on port 4000 (backend)
+lsof -ti:4000 | xargs kill -9
+
+# Kill process on port 3000 (frontend)
+lsof -ti:3000 | xargs kill -9
 ```
 
 ### Production Build
@@ -127,18 +134,21 @@ npm run start
 ## 🧪 Testing
 
 ### Run All Tests
+
 ```bash
 # From root - runs all tests
 npm test
 ```
 
 ### Backend Tests
+
 ```bash
 cd backend
 npm test
 ```
 
 ### Frontend Tests
+
 ```bash
 cd frontend
 npm test          # Watch mode
@@ -149,12 +159,14 @@ npm run test:coverage  # With coverage report
 ## 📡 API Documentation
 
 ### GraphQL Endpoint
+
 - URL: `http://localhost:4000/graphql`
 - GraphQL Playground available in development mode
 
 ### Available Queries
 
 #### Get Random Person
+
 ```graphql
 query GetRandomPerson {
   getRandomPerson {
@@ -172,6 +184,7 @@ query GetRandomPerson {
 ```
 
 #### Get Random Starship
+
 ```graphql
 query GetRandomStarship {
   getRandomStarship {
@@ -194,6 +207,7 @@ query GetRandomStarship {
 ```
 
 #### Get Battle History
+
 ```graphql
 query GetBattleHistory($page: Int, $limit: Int, $resourceType: String, $winner: String) {
   getBattleHistory(page: $page, limit: $limit, resourceType: $resourceType, winner: $winner) {
@@ -220,6 +234,7 @@ query GetBattleHistory($page: Int, $limit: Int, $resourceType: String, $winner: 
 ```
 
 #### Get Battle Statistics
+
 ```graphql
 query GetBattleStatistics {
   getBattleStatistics {
@@ -232,8 +247,13 @@ query GetBattleStatistics {
 ### Available Mutations
 
 #### Save Battle Result
+
 ```graphql
-mutation SaveBattleResult($winner: String!, $resourceType: String!, $players: [BattlePlayerInput!]!) {
+mutation SaveBattleResult(
+  $winner: String!
+  $resourceType: String!
+  $players: [BattlePlayerInput!]!
+) {
   saveBattleResult(winner: $winner, resourceType: $resourceType, players: $players) {
     success
     message
@@ -279,6 +299,7 @@ star-wars-battle/
 ## 🚀 Deployment
 
 ### Frontend Deployment (Vercel/Netlify)
+
 ```bash
 cd frontend
 npm run build
@@ -286,6 +307,7 @@ npm run build
 ```
 
 ### Backend Deployment (Heroku/AWS)
+
 ```bash
 cd backend
 npm run build
@@ -293,32 +315,40 @@ npm run build
 ```
 
 ### Database (AWS RDS)
+
 - Already configured if using the provided RDS instance
 - Ensure security groups allow connections from your deployment environment
 
 ## 🔐 Environment Variables
 
 ### Backend
-| Variable | Description | Example |
-|----------|-------------|---------|
+
+| Variable     | Description                  | Example                             |
+| ------------ | ---------------------------- | ----------------------------------- |
 | DATABASE_URL | PostgreSQL connection string | postgresql://user:pass@host:5432/db |
-| NODE_ENV | Environment mode | development / production |
-| PORT | Server port | 4000 |
+| NODE_ENV     | Environment mode             | development / production            |
+| PORT         | Server port                  | 4000                                |
 
 ### Frontend
-| Variable | Description | Example |
-|----------|-------------|---------|
+
+| Variable     | Description     | Example                       |
+| ------------ | --------------- | ----------------------------- |
 | VITE_API_URL | Backend API URL | http://localhost:4000/graphql |
 
 ## 🛠 Available Scripts
 
 ### Root Level
+
+- `npm run setup` - Install all dependencies (root, backend, frontend)
 - `npm run dev` - Start both frontend and backend
 - `npm run build` - Build both projects
 - `npm test` - Run all tests
-- `npm run clean` - Clean all node_modules
+- `npm run lint` - Run ESLint on all TypeScript files
+- `npm run format` - Format all files with Prettier
+- `npm run clean` - Clean all node_modules and build folders
 
 ### Frontend
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
@@ -328,6 +358,7 @@ npm run build
 - `npm test` - Run tests in watch mode
 
 ### Backend
+
 - `npm run dev` - Start development server with nodemon
 - `npm run build` - Compile TypeScript
 - `npm start` - Start production server
@@ -335,14 +366,6 @@ npm run build
 - `npm run db:migrate` - Run database migrations
 - `npm run db:seed` - Seed database
 - `npm run db:check` - Verify database data
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
 
 ## 📝 Testing Strategy
 
@@ -355,13 +378,54 @@ npm run build
 ## 🐛 Troubleshooting
 
 ### Database Connection Issues
+
+#### Corporate Network / Firewall Blocking Port 5432
+
+If you cannot connect to the database from a corporate or restricted network:
+
+1. **Test connectivity to the database:**
+
 ```bash
-# Test database connection
-cd backend
-npm run db:check
+nc -zv starwars-battle-db.chu84e02csne.eu-central-1.rds.amazonaws.com 5432
 ```
 
+If this hangs or fails, port 5432 is blocked by your network.
+
+2. **Common solutions:**
+   - Try using a mobile hotspot (usually works)
+   - Connect through a different network
+   - Use a VPN that allows port 5432
+   - Contact your IT department to whitelist port 5432
+
+3. **Alternative for demos:**
+   - Ask for access to an alternative database
+   - Use a local PostgreSQL instance with Docker:
+   ```bash
+   docker run -p 5432:5432 -e POSTGRES_PASSWORD=password postgres:15
+   ```
+
+#### Database Tables Missing
+
+If you get errors about missing tables:
+
+```bash
+cd backend
+# Run migrations to create tables
+npm run db:migrate
+# Seed initial data
+npm run db:seed
+```
+
+#### Connection Pool Exhaustion
+
+If connections are timing out but the database is reachable:
+
+- Check if multiple instances are running
+- Restart the backend to reset connections
+- Verify no one else is using too many connections
+
 ### Port Already in Use
+
 ```bash
 # Kill process on port 3000 (frontend)
 lsof -ti:3000 | xargs kill -9
@@ -371,21 +435,25 @@ lsof -ti:4000 | xargs kill -9
 ```
 
 ### Clear Cache and Reinstall
+
 ```bash
 npm run clean
 npm install
 ```
 
-## 📄 License
+### Node Version Issues
 
-MIT
+Ensure you're using Node.js 18 or higher:
 
-## 👨‍💻 Author
+```bash
+node --version  # Should be v18.x.x or higher
+```
 
-Created as a technical assessment for a Full-Stack Developer position.
+### TypeScript Build Errors
 
-## 🙏 Acknowledgments
-
-- Star Wars data inspired by [SWAPI](https://swapi.dev/)
-- Built with modern web development best practices
-- Testing approach influenced by Kent C. Dodds' Testing Library principles
+```bash
+# Clear TypeScript cache
+rm -rf backend/dist frontend/dist
+# Rebuild
+npm run build
+```
